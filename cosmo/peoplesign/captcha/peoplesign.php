@@ -64,6 +64,11 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	protected $request;
 
 	/**
+	 * @var \phpbb\phpbb_log
+	 */
+	private $phpbb_log;
+
+	/**
 	 *
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param \phpbb\cache\service              $cache
@@ -85,6 +90,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
+		$this->phpbb_log = $GLOBALS['phpbb_container']->get('log');
 
 		// Fill the config array
 		self::$peoplesign_config = array(
@@ -255,22 +261,22 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 
 					if (strlen($value) > (self::$ps_opt_reg_len * self::$ps_opt_num_reg)) {
 						// Give an error to the user. value is too large for the DB
-						set_config($captcha_var, $value);
+						$this->config->set($captcha_var, $value);
 					}
 					else {
 						// Store the config data across multiple DB entries, since a DB field is varchar(255)
 						$value = str_pad($value, self::$ps_opt_reg_len * self::$ps_opt_num_reg);
 						for ($i = 0; $i < self::$ps_opt_num_reg; $i++) {
-							set_config($captcha_var . $i, substr($value, $i * self::$ps_opt_reg_len, self::$ps_opt_reg_len));
+							$this->config->set($captcha_var . $i, substr($value, $i * self::$ps_opt_reg_len, self::$ps_opt_reg_len));
 						}
 					}
 				}
 				else {
-					set_config($captcha_var, $value);
+					$this->config->set($captcha_var, $value);
 				}
 			}
 			if ($submit) {
-				add_log('admin', 'LOG_CONFIG_VISUAL');
+				$this->phpbb_log->add('admin', 'LOG_CONFIG_VISUAL');
 				trigger_error($this->user->lang['CONFIG_UPDATED'] .
 				              adm_back_link($module->u_action));
 			}
