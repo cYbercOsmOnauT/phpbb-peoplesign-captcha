@@ -6,7 +6,7 @@
  * extending from: phpbb_captcha_qa_plugin.php 10484 2010-02-08 16:43:39Z bantu $
  * @copyright (c) 2006, 2008 phpBB Group
  * @since         30.05.15
- * @version       1.0.0
+ * @version       1.0.1
  * @copyright     Tekin Birdüzen
  * @license       http://opensource.org/licenses/gpl-license.php GNU Public License
  */
@@ -59,6 +59,11 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	protected $user;
 
 	/**
+	 * @var , \phpbb\request\request_interface
+	 */
+	protected $request;
+
+	/**
 	 *
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param \phpbb\cache\service              $cache
@@ -66,7 +71,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 * @param \phpbb\template\template          $template
 	 * @param \phpbb\user                       $user
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user) {
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request_interface $request) {
 		$this->db = $db;
 		$this->cache = $cache;
 		// Only take the needed config parts
@@ -79,6 +84,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		$this->config = array_diff($this->config, array(''));
 		$this->template = $template;
 		$this->user = $user;
+		$this->request = $request;
 
 		// Fill the config array
 		self::$peoplesign_config = array(
@@ -203,7 +209,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		}
 
 		// Display the CAPTCHA to the user in the same language as the rest of the board.
-		$language = request_var('lang', $this->user->lang_name);
+		$language = $this->request->variable('lang', $this->user->lang_name);
 		$options = $this->get_options_string();
 		$options = self::set_captcha_language($options, $language);
 
@@ -235,14 +241,14 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		add_form_key($form_key);
 
 		// button options on the configure page
-		$submit = request_var('submit', '');
-		$preview = request_var('preview', '');
+		$submit = $this->request->variable('submit', '');
+		$preview = $this->request->variable('preview', '');
 
 		// On preview or submit, then set the values
 		if (($preview || $submit) && check_form_key($form_key)) {
 			$captcha_vars = self::get_peoplesign_confignames(false);
 			foreach ($captcha_vars as $captcha_var) {
-				$value = request_var($captcha_var, '');
+				$value = $this->request->variable($captcha_var, '');
 				// Handle the peoplesign options specially... split them across DB entries
 				if ($captcha_var == 'peoplesign_options') {
 					$value = str_replace("&amp;", "&", $value);
@@ -333,7 +339,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 **/
 	private function request_session_id() {
 		if ('' === self::$peoplesign_session_id) {
-			self::$peoplesign_session_id = request_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_SESSION_ID_NAME'], '');
+			self::$peoplesign_session_id = $this->request->variable(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_SESSION_ID_NAME'], '');
 			$this->reset();
 		}
 	}
@@ -504,11 +510,11 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	private function process_peoplesign_response($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key) {
 		// If these variables were not supplied, attempt to retrieve them from post
 		if (!$peoplesign_session_id) {
-			$peoplesign_session_id = self::get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_SESSION_ID_NAME'], '');
+			$peoplesign_session_id = $this->get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_SESSION_ID_NAME'], '');
 		}
 
 		if (!$peoplesign_response) {
-			$peoplesign_response = self::get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_RESPONSE_NAME'], '');
+			$peoplesign_response = $this->get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_RESPONSE_NAME'], '');
 		}
 
 		$status = $this->get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $client_location, $peoplesign_key);
@@ -611,7 +617,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 */
 	private function get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key) {
 		if (!$peoplesign_response) {
-			$peoplesign_response = self::get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_RESPONSE_NAME'], '');
+			$peoplesign_response = $this->get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_RESPONSE_NAME'], '');
 		}
 
 		$peoplesign_response = urlencode($peoplesign_response);
@@ -640,9 +646,9 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		return $names;
 	}
 
-	private static function get_post_var($variable_name, $variable_type) {
+	private function get_post_var($variable_name, $variable_type) {
 
-		$return = request_var($variable_name, $variable_type);
+		$return = $this->request->variable($variable_name, $variable_type);
 		$return = str_replace('&amp;', '&', $return);
 
 		return $return;

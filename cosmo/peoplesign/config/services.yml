@@ -9,5 +9,6 @@ services:
             - @config
             - @template
             - @user
+            - @request
         tags:
             - { name: captcha.plugins }
