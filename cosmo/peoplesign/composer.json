@@ -1,0 +1,27 @@
+{
+  "name": "cosmo/peoplesign",
+  "type": "phpbb-extension",
+  "description": "Peoplesign Captcha Extension for phpBB 3.1",
+  "homepage": "http://www.peoplesign.com",
+  "version": "1.0.0",
+  "time": "2015-05-26",
+  "license": "GPL-2.0",
+  "authors": [{
+    "name": "cYbercOsmOnauT",
+    "homepage": "http://www.web-coding.eu",
+    "role": "Developer"
+  }],
+  "require": {
+    "php": ">=5.3.3",
+    "composer/installers": "~1.0"
+  },
+  "require-dev": {
+    "phpbb/epv": "dev-master"
+  },
+  "extra": {
+    "display-name": "Peoplesign Captcha",
+    "soft-require": {
+      "phpbb/phpbb": ">=3.1.0-RC3,<3.2.*@dev"
+    }
+  }
+}
