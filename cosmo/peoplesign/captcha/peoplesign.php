@@ -84,7 +84,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 		// Only take the needed config parts
 		$names = self::get_peoplesign_confignames();
 		$this->config = array();
-		foreach ($names AS $name)
+		foreach ($names as $name)
 		{
 			$this->config[$name] = $config->offsetGet($name);
 		}
@@ -213,7 +213,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 			return false;
 		}
 
-		$response = $this->process_peoplesign_response(self::$peoplesign_session_id, '', self::$peoplesign_location, $this->get_peoplesign_key());
+		$response = $this->process_peoplesign_response(self::$peoplesign_session_id, '', $this->get_peoplesign_key(), self::$peoplesign_location);
 
 		if ($response)
 		{
@@ -242,8 +242,8 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 			$this->get_peoplesign_key(),
 			$this->user->ip,
 			$options,
-			self::$peoplesign_location,
 			$peoplesign_wrapper_version,
+			self::$peoplesign_location,
 			self::$peoplesign_session_id
 		);
 		self::$peoplesign_session_id = $response;
@@ -348,7 +348,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 			$this->code = $this->user->lang['PEOPLESIGN_NO_KEY'];
 			return;
 		}
-		elseif ($this->solved)
+		else if ($this->solved)
 		{
 			$this->reset();
 		}
@@ -487,7 +487,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 	 *
 	 * @return    array    status, session_id
 	 */
-	private function get_peoplesign_session_id($peoplesign_key, $visitor_ip, $peoplesign_options, $client_location = 'default', $wrapper_plugin_info, $current_peoplesign_session_id = '')
+	private function get_peoplesign_session_id($peoplesign_key, $visitor_ip, $peoplesign_options, $wrapper_plugin_info, $client_location = 'default', $current_peoplesign_session_id = '')
 	{
 		$this->load_language();
 		// ensure private key is not the empty string
@@ -574,7 +574,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 	 *
 	 * @return    boolean                    true for pass, false for fail
 	 */
-	private function process_peoplesign_response($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key)
+	private function process_peoplesign_response($peoplesign_session_id, $peoplesign_response, $peoplesign_key, $client_location = 'default')
 	{
 		// If these variables were not supplied, attempt to retrieve them from post
 		if (!$peoplesign_session_id)
@@ -587,7 +587,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 			$peoplesign_response = $this->get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_RESPONSE_NAME'], '');
 		}
 
-		$status = $this->get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $client_location, $peoplesign_key);
+		$status = $this->get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $peoplesign_key, $client_location);
 
 		switch ($status)
 		{
@@ -691,7 +691,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 	 *
 	 * @return    string                    pass, fail or awaitingResponse
 	 */
-	private function get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key)
+	private function get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $peoplesign_key, $client_location = 'default')
 	{
 		if (!$peoplesign_response)
 		{

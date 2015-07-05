@@ -3,7 +3,7 @@
  *
  * @author    Tekin Birdüzen <t.birduezen@web-coding.eu>
  * @since     26.05.15
- * @version   1.0.0
+ * @version   1.0.1
  * @copyright Tekin Birdüzen
  * @package   phpBB Extension
  * @license   http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
@@ -66,7 +66,7 @@ class ext extends \phpbb\extension\base
 			case '': // Empty means nothing has run yet
 				$this->getconfig();
 				// Purge Config vars
-				foreach (self::get_peoplesign_confignames() AS $confname)
+				foreach (self::get_peoplesign_confignames() as $confname)
 				{
 					$this->config->delete($confname);
 				}
