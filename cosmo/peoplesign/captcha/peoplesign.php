@@ -18,7 +18,8 @@ namespace cosmo\peoplesign\captcha;
  *
  * @package VC
  */
-class peoplesign extends \phpbb\captcha\plugins\qa {
+class peoplesign extends \phpbb\captcha\plugins\qa
+{
 	// Setting my_peoplesign_key_override will override the value that is set in
 	//  the DB and disable setting it via the ACP.
 	//  use this if you really want to configure this here.
@@ -71,18 +72,20 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	/**
 	 *
 	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param \phpbb\cache\service              $cache
-	 * @param \phpbb\config\config              $config
-	 * @param \phpbb\template\template          $template
-	 * @param \phpbb\user                       $user
+	 * @param \phpbb\cache\service $cache
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\template\template $template
+	 * @param \phpbb\user $user
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request_interface $request) {
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request_interface $request)
+	{
 		$this->db = $db;
 		$this->cache = $cache;
 		// Only take the needed config parts
 		$names = self::get_peoplesign_confignames();
 		$this->config = array();
-		foreach ($names AS $name) {
+		foreach ($names AS $name)
+		{
 			$this->config[$name] = $config->offsetGet($name);
 		}
 		// Clean out the empty fields
@@ -94,17 +97,17 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 
 		// Fill the config array
 		self::$peoplesign_config = array(
-			'PEOPLESIGN_PLUGIN_PHP_VERSION'                => 'psPlugPHP_2.0.0',
-			'PEOPLESIGN_VERSION_ID'                        => '1.0.15',
-			'PEOPLESIGN_HOST'                              => 'peoplesign.com',
-			'PEOPLESIGN_GET_CHALLENGE_SESSION_ID_PATH'     => '/main/getChallengeSessionID',
-			'PEOPLESIGN_CHALLENGE_SESSION_ID_NAME'         => 'challengeSessionID',
+			'PEOPLESIGN_PLUGIN_PHP_VERSION' => 'psPlugPHP_2.0.0',
+			'PEOPLESIGN_VERSION_ID' => '1.0.15',
+			'PEOPLESIGN_HOST' => 'peoplesign.com',
+			'PEOPLESIGN_GET_CHALLENGE_SESSION_ID_PATH' => '/main/getChallengeSessionID',
+			'PEOPLESIGN_CHALLENGE_SESSION_ID_NAME' => 'challengeSessionID',
 			'PEOPLESIGN_GET_CHALLENGE_SESSION_STATUS_PATH' => '/main/getChallengeSessionStatus_v2',
-			'PEOPLESIGN_CHALLENGE_RESPONSE_NAME'           => 'captcha_peoplesignCRS',
-			'CONNECTION_OPEN_TIMEOUT'                      => 5,
-			'CONNECTION_READ_TIMEOUT'                      => 10,
-			'PEOPLESIGN_IFRAME_WIDTH'                      => '335', // change these settings if java-disabled renderings have scroll bars
-			'PEOPLESIGN_IFRAME_HEIGHT'                     => '380' //  Your individual CAPTCHA setting are too large to be displayed with theses settings
+			'PEOPLESIGN_CHALLENGE_RESPONSE_NAME' => 'captcha_peoplesignCRS',
+			'CONNECTION_OPEN_TIMEOUT' => 5,
+			'CONNECTION_READ_TIMEOUT' => 10,
+			'PEOPLESIGN_IFRAME_WIDTH' => '335', // change these settings if java-disabled renderings have scroll bars
+			'PEOPLESIGN_IFRAME_HEIGHT' => '380' //  Your individual CAPTCHA setting are too large to be displayed with theses settings
 		);
 		self::$peoplesign_config = array_merge(self::$peoplesign_config, array(
 			'PEOPLESIGN_GET_CHALLENGE_SESSION_ID_URL', 'http://' . self::$peoplesign_config['PEOPLESIGN_HOST'] . self::$peoplesign_config['PEOPLESIGN_GET_CHALLENGE_SESSION_ID_PATH'],
@@ -113,75 +116,84 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		));
 	}
 
-	public function init($type = 1) {
+	public function init($type = 1)
+	{
 		$this->load_language();
 	}
 
 	/**
 	 *  API function
 	 */
-	public static function get_instance() {
+	public static function get_instance()
+	{
 		$instance = new phpbb_captcha_peoplesign_plugin();
 
 		return $instance;
 	}
 
-
 	/**
 	 * Determines weather or not the captcha is available and ready.
 	 * Peoplesign requires a key issued from peoplesign.com
 	 **/
-	public function is_available() {
+	public function is_available()
+	{
 		// load language file for pretty display in the ACP dropdown
 		$this->load_language();
 		return !((!array_key_exists('peoplesign_key', $this->config) || ('' === $this->config['peoplesign_key']))) && ('' === self::$my_peoplesign_key_override);
 	}
 
-	public function uninstall() {
+	public function uninstall()
+	{
 	}
 
 	// The argument has to be there for qa compatibility
-	public function garbage_collect($type = 0) {
+	public function garbage_collect($type = 0)
+	{
 
 	}
 
-	public function install() {
+	public function install()
+	{
 	}
 
 	/**
 	 *  API function
 	 */
-	public function has_config() {
+	public function has_config()
+	{
 		return true;
 	}
 
 	/**
 	 *  API function
 	 */
-	static public function get_name() {
+	static public function get_name()
+	{
 		return 'CAPTCHA_PEOPLESIGN';
 	}
 
 	/**
 	 *  API function - send the question to the template
 	 */
-	public function get_template() {
+	public function get_template()
+	{
 		$this->load_code();
 
 		$this->template->assign_vars(array(
-			                             'CODE'           => $this->code,
-			                             'S_CONFIRM_CODE' => true, // required for max login attempts
-		                             ));
+			'CODE' => $this->code,
+			'S_CONFIRM_CODE' => true, // required for max login attempts
+		));
 
 		return '@cosmo_peoplesign/captcha_peoplesign.html';
 	}
 
-	public function get_demo_template() {
+	public function get_demo_template()
+	{
 		$this->load_code();
 
 		$this->template->assign_vars(array(
-			                             'CODE' => $this->code,
-		                             ));
+			'CODE' => $this->code,
+		));
 
 		return '@cosmo_peoplesign/captcha_peoplesign_acp_demo.html';
 	}
@@ -192,25 +204,30 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 *    false - success, user passes
 	 *    true  - failure, user does not pass
 	 **/
-	public function validate() {
+	public function validate()
+	{
 		$this->request_session_id();
 
-		if ($this->solved) {
+		if ($this->solved)
+		{
 			return false;
 		}
 
 		$response = $this->process_peoplesign_response(self::$peoplesign_session_id, '', self::$peoplesign_location, $this->get_peoplesign_key());
 
-		if ($response) {
+		if ($response)
+		{
 			$this->solved = true;
 			return false;
 		}
 		return $this->user->lang['ERROR_WRONG_ANSWER']; // evaluates to true (error), and displays a message to the user that there was a problem
 	}
 
-	public function reset() {
+	public function reset()
+	{
 		$key = $this->get_peoplesign_key();
-		if ('' === $key) {
+		if ('' === $key)
+		{
 			return '';
 		}
 
@@ -236,7 +253,8 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	/**
 	 * Handle the Administration Control Panel configuration
 	 **/
-	public function acp_page($id, &$module) {
+	public function acp_page($id, &$module)
+	{
 		$this->load_language();
 
 		$module->tpl_name = '@cosmo_peoplesign/captcha_peoplesign_acp';
@@ -251,74 +269,92 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		$preview = $this->request->variable('preview', '');
 
 		// On preview or submit, then set the values
-		if (($preview || $submit) && check_form_key($form_key)) {
+		if (($preview || $submit) && check_form_key($form_key))
+		{
 			$captcha_vars = self::get_peoplesign_confignames(false);
-			foreach ($captcha_vars as $captcha_var) {
+			foreach ($captcha_vars as $captcha_var)
+			{
 				$value = $this->request->variable($captcha_var, '');
 				// Handle the peoplesign options specially... split them across DB entries
-				if ($captcha_var == 'peoplesign_options') {
+				if ($captcha_var == 'peoplesign_options')
+				{
 					$value = str_replace("&amp;", "&", $value);
 
-					if (strlen($value) > (self::$ps_opt_reg_len * self::$ps_opt_num_reg)) {
+					if (strlen($value) > (self::$ps_opt_reg_len * self::$ps_opt_num_reg))
+					{
 						// Give an error to the user. value is too large for the DB
 						$this->config->set($captcha_var, $value);
 					}
-					else {
+					else
+					{
 						// Store the config data across multiple DB entries, since a DB field is varchar(255)
 						$value = str_pad($value, self::$ps_opt_reg_len * self::$ps_opt_num_reg);
-						for ($i = 0; $i < self::$ps_opt_num_reg; $i++) {
+						for ($i = 0; $i < self::$ps_opt_num_reg; $i++)
+						{
 							$this->config->set($captcha_var . $i, substr($value, $i * self::$ps_opt_reg_len, self::$ps_opt_reg_len));
 						}
 					}
 				}
-				else {
+				else
+				{
 					$this->config->set($captcha_var, $value);
 				}
 			}
-			if ($submit) {
+			if ($submit)
+			{
 				$this->phpbb_log->add('admin', 'LOG_CONFIG_VISUAL');
 				trigger_error($this->user->lang['CONFIG_UPDATED'] .
-				              adm_back_link($module->u_action));
+					adm_back_link($module->u_action));
 			}
 		}
-		else if ($submit || $preview) {
-			trigger_error($this->user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+		else
+		{
+			if ($submit || $preview)
+			{
+				trigger_error($this->user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+			}
 		}
 
 		$this->reset();
 
 		$this->template->assign_vars(array(
-			                             'PEOPLESIGN_KEY'        => $this->get_peoplesign_key(),
-			                             'PEOPLESIGN_OPTIONS'    => $this->get_options_string(),
-			                             'PEOPLESIGN_VERSION_ID' => self::$peoplesign_config['PEOPLESIGN_VERSION_ID'],
-			                             'CAPTCHA_PREVIEW'       => $this->get_demo_template($id),
-			                             'CAPTCHA_NAME'          => $this->get_service_name(),
-			                             'U_ACTION'              => $module->u_action
-		                             ));
+			'PEOPLESIGN_KEY' => $this->get_peoplesign_key(),
+			'PEOPLESIGN_OPTIONS' => $this->get_options_string(),
+			'PEOPLESIGN_VERSION_ID' => self::$peoplesign_config['PEOPLESIGN_VERSION_ID'],
+			'CAPTCHA_PREVIEW' => $this->get_demo_template($id),
+			'CAPTCHA_NAME' => $this->get_service_name(),
+			'U_ACTION' => $module->u_action
+		));
 	}
 
 	/**
 	 *  Private methods
 	 */
 
-	private function load_language() {
+	private function load_language()
+	{
 		// load our language file if needed
-		if (!array_key_exists('lang', $this->user) || !array_key_exists('PEOPLESIGN_LANG', $this->user->lang)) {
+		if (!array_key_exists('lang', $this->user) || !array_key_exists('PEOPLESIGN_LANG', $this->user->lang))
+		{
 			$this->user->add_lang_ext('cosmo/peoplesign', 'captcha_peoplesign');
 		}
 	}
 
-	private function load_code() {
-		if (!$this->get_peoplesign_key()) {
+	private function load_code()
+	{
+		if (!$this->get_peoplesign_key())
+		{
 			$this->load_language();
 			$this->code = $this->user->lang['PEOPLESIGN_NO_KEY'];
 			return;
 		}
-		elseif ($this->solved) {
+		elseif ($this->solved)
+		{
 			$this->reset();
 		}
 		$this->request_session_id();
-		if ('' !== self::$peoplesign_session_id) {
+		if ('' !== self::$peoplesign_session_id)
+		{
 			$this->code = $this->get_peoplesign_javascript(self::$peoplesign_session_id);
 		}
 	}
@@ -326,11 +362,14 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	/**
 	 * reconstitute the peoplesign options from xiple DB entries
 	 **/
-	private function get_options_string() {
+	private function get_options_string()
+	{
 		$ps_opts = '';
 		// reconstitute the option string from the many DB entries
-		for ($i = 0; $i < self::$ps_opt_num_reg; $i++) {
-			if (!array_key_exists('peoplesign_options' . $i, $this->config)) {
+		for ($i = 0; $i < self::$ps_opt_num_reg; $i++)
+		{
+			if (!array_key_exists('peoplesign_options' . $i, $this->config))
+			{
 				$this->config['peoplesign_options' . $i] = ''; // initialize
 			}
 			$ps_opts .= $this->config['peoplesign_options' . $i];
@@ -343,16 +382,21 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	/**
 	 * populate the Peoplesign session id var
 	 **/
-	private function request_session_id() {
-		if ('' === self::$peoplesign_session_id) {
+	private function request_session_id()
+	{
+		if ('' === self::$peoplesign_session_id)
+		{
 			self::$peoplesign_session_id = $this->request->variable(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_SESSION_ID_NAME'], '');
 			$this->reset();
 		}
 	}
 
-	private function get_peoplesign_key() {
-		if ('' === self::$my_peoplesign_key_override) {
-			if (!array_key_exists('peoplesign_key', $this->config)) {
+	private function get_peoplesign_key()
+	{
+		if ('' === self::$my_peoplesign_key_override)
+		{
+			if (!array_key_exists('peoplesign_key', $this->config))
+			{
 				$this->config['peoplesign_key'] = ''; // initialize
 			}
 
@@ -370,11 +414,14 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 *
 	 * @return    string                    The HTML that will display the CAPTCHA.
 	 */
-	private function get_peoplesign_javascript($peoplesign_session_id, $iframe_width = '', $iframe_height = '') {
-		if ('' === $iframe_width) {
+	private function get_peoplesign_javascript($peoplesign_session_id, $iframe_width = '', $iframe_height = '')
+	{
+		if ('' === $iframe_width)
+		{
 			$iframe_width = self::$peoplesign_config['PEOPLESIGN_IFRAME_WIDTH'];
 		}
-		if ('' === $iframe_height) {
+		if ('' === $iframe_height)
+		{
 			$iframe_height = self::$peoplesign_config['PEOPLESIGN_IFRAME_HEIGHT'];
 		}
 
@@ -403,11 +450,14 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 *
 	 * @return    string                    The HTML that will display the CAPTCHA.
 	 */
-	private function get_peoplesign_iframe($peoplesign_session_id, $iframe_width = '', $iframe_height = '') {
-		if ('' === $iframe_width) {
+	private function get_peoplesign_iframe($peoplesign_session_id, $iframe_width = '', $iframe_height = '')
+	{
+		if ('' === $iframe_width)
+		{
 			$iframe_width = self::$peoplesign_config['PEOPLESIGN_IFRAME_WIDTH'];
 		}
-		if ('' === $iframe_height) {
+		if ('' === $iframe_height)
+		{
 			$iframe_height = self::$peoplesign_config['PEOPLESIGN_IFRAME_HEIGHT'];
 		}
 
@@ -432,25 +482,29 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 * @param                                              string    visitor_ip                                    The ipaddress of the visitor, this value can be set by the user.
 	 * @param                                              string    peoplesign_options (optional)                The challenge option string obtained from the customize page at peoplesign.com
 	 * @param                                              string    client_location                                The location id on the webiste where the CAPTCHA appears.
-	 * @param    wrapper_plugin_info (optional)            The       version of the web framework wrapper used to call this function.
-	 * @param    current_peoplesign_session_id  (optional) The       existing session id if one exists.  It is validated again in this function.
+	 * @param    wrapper_plugin_info (optional) The version of the web framework wrapper used to call this function.
+	 * @param    current_peoplesign_session_id  (optional) The existing session id if one exists.  It is validated again in this function.
 	 *
 	 * @return    array    status, session_id
 	 */
-	private function get_peoplesign_session_id($peoplesign_key, $visitor_ip, $peoplesign_options, $client_location = 'default', $wrapper_plugin_info, $current_peoplesign_session_id = '') {
+	private function get_peoplesign_session_id($peoplesign_key, $visitor_ip, $peoplesign_options, $client_location = 'default', $wrapper_plugin_info, $current_peoplesign_session_id = '')
+	{
 		$this->load_language();
 		// ensure private key is not the empty string
-		if ('' === $peoplesign_key) {
+		if ('' === $peoplesign_key)
+		{
 			$this->print_error($this->user->lang['ERROR_EMPTY_KEY']);
 			return ('');
 		}
 
-		if ('' === $visitor_ip) {
+		if ('' === $visitor_ip)
+		{
 			$visitor_ip = $_SERVER['REMOTE_ADDR'];
 		}
 
 		// challenge option string - accept a string or an array for flexibility to the user
-		if (is_string($peoplesign_options)) {
+		if (is_string($peoplesign_options))
+		{
 			parse_str($peoplesign_options, $peoplesign_options);
 		}
 
@@ -462,8 +516,10 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		$peoplesign_args = '';
 
 		// create an encoded string containing peoplesign_options
-		if (is_array($peoplesign_options)) {
-			foreach ($peoplesign_options as $name => $value) {
+		if (is_array($peoplesign_options))
+		{
+			foreach ($peoplesign_options as $name => $value)
+			{
 				$peoplesign_args .= '&' . urlencode($name) . '=' . urlencode($value);
 			}
 		}
@@ -473,7 +529,8 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		// default value to return the empty string
 		$peoplesign_session_id = '';
 
-		if ($response) {
+		if ($response)
+		{
 			// inspect the response for a status string and the session id
 			$peoplesign_session_id = '';
 			$status = $this->user->lang['CODE_SERVER_UNREACHABLE'];
@@ -481,20 +538,24 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 			$tmp = explode("\n", $response, 2);
 			$tmp_count = count($tmp);
 
-			if ($tmp_count >= 1) {
+			if ($tmp_count >= 1)
+			{
 				// pass the status message through to the error message.
 				$status = $tmp[0];
-				if ($tmp_count >= 2) {
+				if ($tmp_count >= 2)
+				{
 					$peoplesign_session_id = $tmp[1];
 				}
 			}
 
 			// The server will respond with "success"
-			if ('success' !== $status) {
+			if ('success' !== $status)
+			{
 				$this->print_error($this->user->lang['ERROR_SERVER_STATUS'] . " ({$status})");
 			}
 		}
-		else {
+		else
+		{
 			$this->print_error($this->user->lang['ERROR_BAD_RESPONSE']);
 		}
 
@@ -513,19 +574,23 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 *
 	 * @return    boolean                    true for pass, false for fail
 	 */
-	private function process_peoplesign_response($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key) {
+	private function process_peoplesign_response($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key)
+	{
 		// If these variables were not supplied, attempt to retrieve them from post
-		if (!$peoplesign_session_id) {
+		if (!$peoplesign_session_id)
+		{
 			$peoplesign_session_id = $this->get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_SESSION_ID_NAME'], '');
 		}
 
-		if (!$peoplesign_response) {
+		if (!$peoplesign_response)
+		{
 			$peoplesign_response = $this->get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_RESPONSE_NAME'], '');
 		}
 
 		$status = $this->get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $client_location, $peoplesign_key);
 
-		switch ($status) {
+		switch ($status)
+		{
 			case 'pass':
 				$allow_pass = true;
 				break;
@@ -550,13 +615,14 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 * Submit the request to the server
 	 *
 	 * @param integer $port
-	 * @param string  $host
-	 * @param string  $path
-	 * @param string  $encoded_payload
+	 * @param string $host
+	 * @param string $path
+	 * @param string $encoded_payload
 	 *
 	 * @return
 	 */
-	private function http_post($port, $host, $path, $encoded_payload) {
+	private function http_post($port, $host, $path, $encoded_payload)
+	{
 		$this->load_language();
 		$http_request =
 			"POST $path HTTP/1.0\n" .
@@ -578,7 +644,8 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 
 		$socket = @fsockopen($host, $port, $errno, $errstr, self::$peoplesign_config['CONNECTION_OPEN_TIMEOUT']);
 
-		if (!$socket) {
+		if (!$socket)
+		{
 			$this->print_error($this->user->lang['ERROR_NO_SOCKET'] . " ($errstr: [$errno])");
 			return $this->user->lang['CODE_SERVER_UNREACHABLE'];
 		}
@@ -590,9 +657,11 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		$maxBlocks = 1024;
 
 		stream_set_timeout($socket, self::$peoplesign_config['CONNECTION_READ_TIMEOUT']);
-		while (!feof($socket)) {
+		while (!feof($socket))
+		{
 			$http_response .= fgets($socket, $blockSize);
-			if ($block >= $maxBlocks) {
+			if ($block >= $maxBlocks)
+			{
 				$this->print_error($this->user->lang['ERROR_EXCESSIVE_DATA']);
 				fclose($socket);
 				return $this->user->lang['CODE_INVALID_SERVER_RESPONSE'];
@@ -606,7 +675,8 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 		return $return_value[1];
 	}
 
-	private function print_error($message) {
+	private function print_error($message)
+	{
 		$this->load_language();
 		error_log($this->user->lang['ERROR_PREAMBLE'] . $message);
 	}
@@ -621,8 +691,10 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 *
 	 * @return    string                    pass, fail or awaitingResponse
 	 */
-	private function get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key) {
-		if (!$peoplesign_response) {
+	private function get_peoplesign_session_status($peoplesign_session_id, $peoplesign_response, $client_location = 'default', $peoplesign_key)
+	{
+		if (!$peoplesign_response)
+		{
 			$peoplesign_response = $this->get_post_var(self::$peoplesign_config['PEOPLESIGN_CHALLENGE_RESPONSE_NAME'], '');
 		}
 
@@ -639,20 +711,25 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 *  Static methods
 	 */
 
-	private static function get_peoplesign_confignames($long = true) {
+	private static function get_peoplesign_confignames($long = true)
+	{
 		$names = array('peoplesign_key');
-		if ($long) {
-			for ($i = 0; $i < self::$ps_opt_num_reg; $i++) {
+		if ($long)
+		{
+			for ($i = 0; $i < self::$ps_opt_num_reg; $i++)
+			{
 				$names[] = 'peoplesign_options' . $i;
 			}
 		}
-		else {
+		else
+		{
 			$names[] = 'peoplesign_options';
 		}
 		return $names;
 	}
 
-	private function get_post_var($variable_name, $variable_type) {
+	private function get_post_var($variable_name, $variable_type)
+	{
 
 		$return = $this->request->variable($variable_name, $variable_type);
 		$return = str_replace('&amp;', '&', $return);
@@ -668,19 +745,23 @@ class peoplesign extends \phpbb\captcha\plugins\qa {
 	 *
 	 * If the specified language is not supported, or recognized by the peoplesign server (highly doubtful), the CAPTCHA language will be defaulted to english by the Peoplesign server.
 	 */
-	private static function set_captcha_language($option_string, $language = '') {
+	private static function set_captcha_language($option_string, $language = '')
+	{
 		# Do not add an empty language.
-		if ('' === $language) {
+		if ('' === $language)
+		{
 			return $option_string;
 		}
 
 		# Only add the language if it isn't already specified.
 		$pos = strpos($option_string, 'language');
-		if (false === $pos) {
+		if (false === $pos)
+		{
 			# The option string has no language setting defined.
 
 			# Check if the string is empty.
-			if ('' === $option_string) {
+			if ('' === $option_string)
+			{
 				# There was no challenge option settings, create one.
 				return 'language=' . $language;
 			}

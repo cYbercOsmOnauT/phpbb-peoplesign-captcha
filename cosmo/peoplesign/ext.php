@@ -15,7 +15,8 @@ namespace cosmo\peoplesign;
  * @ignore
  */
 
-class ext extends \phpbb\extension\base {
+class ext extends \phpbb\extension\base
+{
 	private $config;
 	private static $ps_opt_num_reg = 4;
 
@@ -26,12 +27,15 @@ class ext extends \phpbb\extension\base {
 	 *
 	 * @return mixed Returns false after last step, otherwise temporary state
 	 */
-	public function disable_step($old_state) {
-		switch ($old_state) {
+	public function disable_step($old_state)
+	{
+		switch ($old_state)
+		{
 			case '': // Empty means nothing has run yet
 				$this->getconfig();
 				// Check if peoplesign currently is the default captcha
-				if ($this->config['captcha_plugin'] === $this->container->get('cosmo.peoplesign.captcha.peoplesign')->get_service_name()) {
+				if ($this->config['captcha_plugin'] === $this->container->get('cosmo.peoplesign.captcha.peoplesign')->get_service_name())
+				{
 					// It's the default captcha, set the default captcha to phpBB's default GD captcha.
 					$this->config->set('captcha_plugin', 'core.captcha.plugins.gd');
 				}
@@ -55,12 +59,15 @@ class ext extends \phpbb\extension\base {
 	 *
 	 * @return mixed Returns false after last step, otherwise temporary state
 	 */
-	public function purge_step($old_state) {
-		switch ($old_state) {
+	public function purge_step($old_state)
+	{
+		switch ($old_state)
+		{
 			case '': // Empty means nothing has run yet
 				$this->getconfig();
 				// Purge Config vars
-				foreach (self::get_peoplesign_confignames() AS $confname) {
+				foreach (self::get_peoplesign_confignames() AS $confname)
+				{
 					$this->config->delete($confname);
 				}
 				return 'deleted';
@@ -74,14 +81,17 @@ class ext extends \phpbb\extension\base {
 		}
 	}
 
-	private function getconfig() {
+	private function getconfig()
+	{
 		// Get config
 		$this->config = $this->container->get('config');
 	}
 
-	private static function get_peoplesign_confignames() {
+	private static function get_peoplesign_confignames()
+	{
 		$names = array('peoplesign_key');
-		for ($i = 0; $i < self::$ps_opt_num_reg; $i++) {
+		for ($i = 0; $i < self::$ps_opt_num_reg; $i++)
+		{
 			$names[] = 'peoplesign_options' . $i;
 		}
 		return $names;
