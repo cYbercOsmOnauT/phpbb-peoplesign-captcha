@@ -1,4 +1,4 @@
-peoplesign:) CAPTCHA Extension for phpBB 3.1
+# peoplesign:) CAPTCHA Extension for phpBB 3.1
 
 ![Travis CI Buildstatus](https://travis-ci.org/cYbercOsmOnauT/phpbb-peoplesign-captcha.svg)
 
