@@ -6,7 +6,7 @@
  * extending from: phpbb_captcha_qa_plugin.php 10484 2010-02-08 16:43:39Z bantu $
  * @copyright (c) 2006, 2008 phpBB Group
  * @since         30.05.15
- * @version       1.0.1
+ * @version       1.1.1
  * @copyright     Tekin Birdüzen
  * @license       http://opensource.org/licenses/gpl-license.php GNU Public License
  */
@@ -47,6 +47,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 	/**
 	 * @var \phpbb\config\config
 	 */
+	protected $phpbb_config;
 	protected $config;
 
 	/**
@@ -76,11 +77,13 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 	 * @param \phpbb\config\config $config
 	 * @param \phpbb\template\template $template
 	 * @param \phpbb\user $user
+	 * @param \phpbb\log\log $phpbb_container
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request_interface $request)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\template\template $template, \phpbb\user $user, \phpbb\request\request_interface $request, \phpbb\log\log $log)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->phpbb_config = $config;
 		// Only take the needed config parts
 		$names = self::get_peoplesign_confignames();
 		$this->config = array();
@@ -93,7 +96,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
-		$this->phpbb_log = $GLOBALS['phpbb_container']->get('log');
+		$this->phpbb_log = $log;
 
 		// Fill the config array
 		self::$peoplesign_config = array(
@@ -283,7 +286,7 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 					if (strlen($value) > (self::$ps_opt_reg_len * self::$ps_opt_num_reg))
 					{
 						// Give an error to the user. value is too large for the DB
-						$this->config->set($captcha_var, $value);
+						$this->phpbb_config->set($captcha_var, $value);
 					}
 					else
 					{
@@ -291,18 +294,18 @@ class peoplesign extends \phpbb\captcha\plugins\qa
 						$value = str_pad($value, self::$ps_opt_reg_len * self::$ps_opt_num_reg);
 						for ($i = 0; $i < self::$ps_opt_num_reg; $i++)
 						{
-							$this->config->set($captcha_var . $i, substr($value, $i * self::$ps_opt_reg_len, self::$ps_opt_reg_len));
+							$this->phpbb_config->set($captcha_var . $i, substr($value, $i * self::$ps_opt_reg_len, self::$ps_opt_reg_len));
 						}
 					}
 				}
 				else
 				{
-					$this->config->set($captcha_var, $value);
+					$this->phpbb_config->set($captcha_var, $value);
 				}
 			}
 			if ($submit)
 			{
-				$this->phpbb_log->add('admin', 'LOG_CONFIG_VISUAL');
+				$this->phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_VISUAL');
 				trigger_error($this->user->lang['CONFIG_UPDATED'] .
 					adm_back_link($module->u_action));
 			}

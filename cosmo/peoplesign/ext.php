@@ -3,7 +3,7 @@
  *
  * @author    Tekin Birdüzen <t.birduezen@web-coding.eu>
  * @since     26.05.15
- * @version   1.0.1
+ * @version   1.1.1
  * @copyright Tekin Birdüzen
  * @package   phpBB Extension
  * @license   http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2

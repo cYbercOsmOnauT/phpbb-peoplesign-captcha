@@ -10,5 +10,6 @@ services:
             - @template
             - @user
             - @request
+            - @log
         tags:
             - { name: captcha.plugins }
